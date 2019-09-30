@@ -2,6 +2,8 @@
 bindkey "^[b" backward-word
 bindkey "^[f" forward-word
 
+alias subl='sublime'
+
 # Quick access aliases to .zshrc
 alias zxc='sublime ~/.zshrc'
 alias zxcv='source ~/.zshrc'
