@@ -6,4 +6,4 @@ function git_rebase_onto_master() {
 }
 
 # Rebase current branch onto master
-alias grb=git_rebase_onto_master
+alias gitrb=git_rebase_onto_master

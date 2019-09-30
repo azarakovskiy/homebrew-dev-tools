@@ -30,8 +30,10 @@ Each folder has a `all.zsh` file to import everything from it, an each command m
 ## Contains
 
 + Git `/git/`
-  + `gpr X` - Creates a local branch `PR-X` where `X` is a PR number on GitHub (`https://github.com/azarakovskiy/fake-repo/pull/X`)
-  + `grb` - Rebases current branch onto latest origin/master
+  + `gitpr X` - Creates a local branch `PR-X` where `X` is a PR number on GitHub (`https://github.com/azarakovskiy/fake-repo/pull/X`)
+  + `gitrb` - Rebases current branch onto latest origin/master
+  + `gitsq` - Squashes last two commits of a current branch
+  + `gitcl` - Cleans up current Git repository by removing all the local branches that are merged and their remotes, and reporting on remote branches that don't have a local reference or are not merged 
 + Cli `/cli/`
   + Key-bindings that enable word-by-word navigation in ZSH
   + Quick aliases `zxc` and `zxcv` to open and reload respectively `.zshrc` file

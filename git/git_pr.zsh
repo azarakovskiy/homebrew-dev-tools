@@ -12,4 +12,4 @@ function git_pr() {
 }
 
 # Checkout PR as a branch or update existing
-alias gpr=git_pr
+alias gitpr=git_pr
