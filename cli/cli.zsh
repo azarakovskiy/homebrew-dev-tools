@@ -1,8 +1,3 @@
-# List of plugins
-plugins=(
- git
-)
-
 # Bind for a console word-by-word navigation
 bindkey "^[b" backward-word
 bindkey "^[f" forward-word
