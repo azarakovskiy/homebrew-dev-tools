@@ -16,4 +16,4 @@ function git_branch_checkout() {
 }
 
 # Checkout a branch or create a new one
-alias gitbr=git_branch_checkout
+alias gbra=git_branch_checkout

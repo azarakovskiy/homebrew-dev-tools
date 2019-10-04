@@ -14,4 +14,4 @@ function git_cleanup() {
 	for branch in `git branch -r --no-merged | egrep -v "(^\*|master|HEAD)"`; do echo -e `git show --format="%ci %cr %an" $branch | head -n 1` \\t$branch; done | sort -r
 }
 
-alias gitcl='git_cleanup'
+alias gclean='git_cleanup'
