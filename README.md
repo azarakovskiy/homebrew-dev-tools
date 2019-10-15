@@ -30,11 +30,15 @@ Each folder has a `all.zsh` file to import everything from it, an each command m
 ## Contains
 
 + Git `/git/`
+  + `.gitignore` - Default Git ignore file that you put under your `~` folder to apply to the whole system.
+  + `.gitconfig` - Default Git config file that you put under your `~` folder. Review it before using and edit the placeholders.
+  + `.gitmessage` - Default Git commit message template file that you put under your `~` folder. Now when you use `git commit` command without `-m` this template will be opened for editing.
   + `gpr X` - Creates a local branch `PR-X` where `X` is a PR number on GitHub (`https://github.com/azarakovskiy/fake-repo/pull/X`)
   + `grb` - Rebases current branch onto latest origin/master
   + `gsq` - Squashes last two commits of a current branch
   + `gbra X` - Creates a new branch or check out the existing with a name `X`
   + `gclean` - Cleans up current Git repository by removing all the local branches that are merged and their remotes, and reporting on remote branches that don't have a local reference or are not merged 
+
 + Cli `/cli/`
   + Key-bindings that enable word-by-word navigation in ZSH
   + Quick aliases `zxc` and `zxcv` to open and reload respectively `.zshrc` file
