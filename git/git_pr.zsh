@@ -2,7 +2,6 @@ function git_pr() {
     export PREFIX="""PR-"""
     export PR_NUMBER=$1
     export BRANCH_NAME="""${PREFIX}${PR_NUMBER}"""
-    git checkout master
     git rev-parse --verify ${BRANCH_NAME}
     if [[ $? == 0 ]]; then
         git branch -D ${BRANCH_NAME}
