@@ -8,9 +8,9 @@
 	autocrlf = input
 	editor = sublime -w
 [alias]
-	squash = !git_squash
-	pr = !git_pr
-	cleanup = !git_cleanup
+	squash = !gsq
+	pr = !gpr
+	cleanup = !gclean
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
