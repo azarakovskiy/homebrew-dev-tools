@@ -1,6 +1,8 @@
 [user]
 	name = ???
 	email = ???
+	; https://help.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
+	signingkey = ??? 
 [core]
 	excludesfile = ~/.gitignore
 	autocrlf = input
@@ -18,6 +20,7 @@
 [commit]
 	template = ~/.gitmessage
 	verbose = true
+	gpgsign = true
 
 ; include for all repositories inside ~/Projects/Beat
 ;[includeIf "gitdir:~/Projects/Beat/"]
