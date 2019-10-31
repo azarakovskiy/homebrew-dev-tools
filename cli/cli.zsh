@@ -2,6 +2,9 @@
 bindkey "^[b" backward-word
 bindkey "^[f" forward-word
 
+# Mouse speed
+defaults write -g com.apple.mouse.scaling 9.0
+
 alias subl='sublime'
 
 # Quick access aliases to .zshrc
