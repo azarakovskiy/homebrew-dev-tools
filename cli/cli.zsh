@@ -1,6 +1,6 @@
 # Bind for a console word-by-word navigation
-bindkey "^[b" backward-word
-bindkey "^[f" forward-word
+bindkey "^[[1;9D" backward-word
+bindkey "^[[1;9C" forward-word
 
 # Mouse speed
 defaults write -g com.apple.mouse.scaling 9.0
