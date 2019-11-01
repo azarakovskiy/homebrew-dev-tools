@@ -28,6 +28,7 @@ alias zxcv='source ~/.zshrc'
 # If current folder has .zsh_config, load it
 function chpwd() {
   if [ -r $PWD/.zsh_config ]; then
+  	echo "Loaded .zsh_config from $PWD"
     source $PWD/.zsh_config
   else
     source $HOME/.zshrc
