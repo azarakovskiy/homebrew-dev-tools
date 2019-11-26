@@ -5,7 +5,7 @@ alias k='kubectl'
 function kube_context() {
 	readonly action=$1
 	if [[ $action == "" ]]; then
-		k config get-contexts
+		k config get-contexts | grepl "\*"
 		echo "You wanted to list contexts. Here you are."
 	elif [[ $action == "use" ]]; then
 		readonly context=${2:?"The kube context must be specified as a 2nd param"}
