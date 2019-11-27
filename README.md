@@ -35,6 +35,7 @@ Each folder has a `all.zsh` file to import everything from it, an each command m
   + `.gitmessage` - Default Git commit message template file that you put under your `~` folder. Now when you use `git commit` command without `-m` this template will be opened for editing.
 
   + `gpr X` - Creates a local branch `PR-X` where `X` is a PR number on GitHub (`https://github.com/azarakovskiy/fake-repo/pull/X`)
+  + `gstash pop|push [X]` - (un)Stashes local changes with a given optional name `X`.
   + `grebase X` - Rebases current branch onto latest `origin/X`. An `X` must have an upstream branch.
   + `gsquash` - Squashes last two commits of a current branch
   + `gbranch X` - Creates a new branch or check out the existing with a name `X`
