@@ -1,5 +1,5 @@
-function git_squash() {
+function git_squash_two_commits() {
 	git reset --soft "HEAD^" && git commit --amend
 }
 
-alias gsq='git_squash'
+alias gsquash='git_squash_two_commits'

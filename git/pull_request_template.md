@@ -23,7 +23,7 @@ _This serves as documentation for a task._
 - Three
 
 ## Jira task
-- [Jira Ticket](https://jira.taxibeat.com/browse//browse/TICKET)
+- [Jira Ticket](https://jira.taxibeat.com/browse/browse/TICKET)
 
 ## Other PRs
 - [A meaningful link to a related PR](https://github.com/taxibeat/REPO/pull/NUMBER)
