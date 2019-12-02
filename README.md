@@ -39,7 +39,7 @@ Each folder has a `all.zsh` file to import everything from it, an each command m
   + `grebase X` - Rebases current branch onto latest `origin/X`. An `X` must have an upstream branch.
   + `gsquash` - Squashes last two commits of a current branch
   + `gbranch X` - Creates a new branch or check out the existing with a name `X`
-  + `gclean` - Cleans up current Git repository by removing all the local branches that are merged and their remotes, and reporting on remote branches that don't have a local reference or are not merged 
+  + `gclean X` - [this one might be **ruthless**] Cleans up current Git repository by removing all the local branches that are merged and their remotes, and reporting on remote branches that don't have a local reference or are not merged. `X` is a branch that you consider to be a base branch (develop or master). Basically, it removes branched that are merged into your specified base branch. Never removes `develop` or `master`.
 
 + Cli `/cli/`
   + Key-bindings that enable word-by-word navigation in ZSH
