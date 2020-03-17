@@ -42,3 +42,31 @@ function grepl_impl() {
 	grep -E $regexp
 }
 alias grepl=grepl_impl
+
+# use tool version
+func use() {
+    declare -A _versions=(
+        ["go 1.13"]="/usr/local/opt/go@1.13"
+        ["go 1.14"]="/usr/local/Cellar/go/1.14" 
+    )
+    declare -A _tools=(
+        ["go"]=_setGoVersion 
+    )
+
+    readonly name=${1:?"Specify what you want to use"}
+    readonly version=${2:?"Specify what version of it you want to use"}
+
+    p1="$name"
+    p2="$name $version"
+    fn=$_tools[$p1]
+    v=$_versions[$p2]
+    "$fn" "$v"
+}
+
+func _setGoVersion() {
+    readonly version=$1
+    echo $version
+    ln -sf "$version/bin/go" /usr/local/bin/go 
+    ln -sf "$version/bin/godoc" /usr/local/bin/godoc 
+    ln -sf "$version/bin/gofmt" /usr/local/bin/gofmt
+}
