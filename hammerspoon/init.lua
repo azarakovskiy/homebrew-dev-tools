@@ -31,5 +31,5 @@ Install:andUse("MouseCircle", {
     }
 })
 
-hs.loadSpoon("HammerspoonShiftIt")
+hs.loadSpoon("ShiftIt")
 spoon.HammerspoonShiftIt:bindHotkeys({});
