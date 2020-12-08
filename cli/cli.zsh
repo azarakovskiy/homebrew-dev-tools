@@ -47,11 +47,15 @@ alias grepl=grepl_impl
 func use() {
     declare -A _roots=(
         ["go 1.13"]="/usr/local/Cellar/go@1.13/1.13.8/libexec"
-        ["go 1.14"]="/usr/local/Cellar/go/1.14/libexec" 
+        ["go 1.14"]="/usr/local/Cellar/go@1.14/1.14.13/libexec" 
+	["go 1.15"]="/usr/local/Cellar/go/1.15.5/libexec" 
+	["go latest"]="/usr/local/Cellar/go/1.15.5/libexec" 
     )
     declare -A _versions=(
         ["go 1.13"]="/usr/local/opt/go@1.13"
-        ["go 1.14"]="/usr/local/Cellar/go/1.14" 
+        ["go 1.14"]="/usr/local/Cellar/go@1.14/1.14.13" 
+	["go 1.15"]="/usr/local/Cellar/go/1.15.5" 
+	["go latest"]="/usr/local/Cellar/go/1.15.5/libexec" 
     )
     declare -A _tools=(
         ["go"]=_setGoVersion 
