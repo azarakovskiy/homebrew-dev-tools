@@ -83,3 +83,13 @@ func _setGoVersion() {
     ln -sf "$version/bin/gofmt" /usr/local/bin/gofmt
     export GOROOT=$goroot
 }
+
+# tha cmd to copy zipped THA to a specific folder
+function tha() {
+    readonly folder=${1:?"Folder name (e.g. alexey_zarakovskiy)"}
+    readonly zip=${2:?"Archive name (e.g. beat_tha.zip)"}
+    mkdir ~/Projects/Beat/tha/$folder && \
+    mv ~/Downloads/$zip ~/Projects/Beat/tha/$folder && \
+    unar -o ~/Projects/Beat/tha/$folder  ~/Projects/Beat/tha/$folder/$zip && \
+    echo "Done. Here: ~/Projects/Beat/tha/$folder"
+}
