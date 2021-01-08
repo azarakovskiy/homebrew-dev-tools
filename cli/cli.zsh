@@ -82,7 +82,6 @@ func _setGoVersion() {
     ln -sf "$version/bin/godoc" /usr/local/bin/godoc 
     ln -sf "$version/bin/gofmt" /usr/local/bin/gofmt
     export GOROOT=$goroot
-    export GOPATH=$goroot
 }
 
 # tha cmd to copy zipped THA to a specific folder
