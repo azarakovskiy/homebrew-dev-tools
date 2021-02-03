@@ -88,8 +88,8 @@ func _setGoVersion() {
 function tha() {
     readonly folder=${1:?"Folder name (e.g. alexey_zarakovskiy)"}
     readonly zip=${2:?"Archive name (e.g. beat_tha.zip)"}
-    mkdir ~/Projects/Beat/tha/$folder && \
-    mv ~/Downloads/$zip ~/Projects/Beat/tha/$folder && \
-    unar -o ~/Projects/Beat/tha/$folder  ~/Projects/Beat/tha/$folder/$zip && \
-    echo "Done. Here: ~/Projects/Beat/tha/$folder"
+    mkdir ~/Projects/Beat/Interviews/THA/$folder && \
+    mv ~/Downloads/$zip ~/Projects/Beat/Interviews/THA/$folder && \
+    unar -o ~/Projects/Beat/tha/$folder  ~/Projects/Beat/Interviews/THA/$folder/$zip && \
+    echo "Done. Here: ~/Projects/Beat/Interviews/THA/$folder"
 }
