@@ -90,6 +90,6 @@ function tha() {
     readonly zip=${2:?"Archive name (e.g. beat_tha.zip)"}
     mkdir ~/Projects/Beat/Interviews/THA/$folder && \
     mv ~/Downloads/$zip ~/Projects/Beat/Interviews/THA/$folder && \
-    unar -o ~/Projects/Beat/tha/$folder  ~/Projects/Beat/Interviews/THA/$folder/$zip && \
+    unar -o ~/Projects/Beat/Interviews/THA/$folder  ~/Projects/Beat/Interviews/THA/$folder/$zip && \
     echo "Done. Here: ~/Projects/Beat/Interviews/THA/$folder"
 }
