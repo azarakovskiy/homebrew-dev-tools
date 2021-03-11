@@ -46,16 +46,18 @@ alias grepl=grepl_impl
 # use tool version
 func use() {
     declare -A _roots=(
-        ["go 1.13"]="/usr/local/Cellar/go@1.13/1.13.8/libexec"
-        ["go 1.14"]="/usr/local/Cellar/go@1.14/1.14.13/libexec" 
-	["go 1.15"]="/usr/local/Cellar/go/1.15.5/libexec" 
-	["go latest"]="/usr/local/Cellar/go/1.15.5/libexec" 
+        ["go 1.13"]="/usr/local/Cellar/go@1.13/1.13.15/libexec"
+        ["go 1.14"]="/usr/local/Cellar/go@1.14/1.14.15/libexec" 
+	["go 1.15"]="/usr/local/Cellar/go@1.15/1.15.9/libexec" 
+	["go 1.16"]="/usr/local/Cellar/go/1.16/libexec" 
+	["go latest"]="/usr/local/Cellar/go/1.16/libexec" 
     )
     declare -A _versions=(
-        ["go 1.13"]="/usr/local/opt/go@1.13"
-        ["go 1.14"]="/usr/local/Cellar/go@1.14/1.14.13" 
-	["go 1.15"]="/usr/local/Cellar/go/1.15.5" 
-	["go latest"]="/usr/local/Cellar/go/1.15.5/libexec" 
+        ["go 1.13"]="/usr/local/Cellar/go@1.13/1.13.15"
+        ["go 1.14"]="/usr/local/Cellar/go@1.14/1.14.15" 
+	["go 1.15"]="/usr/local/Cellar/go@1.15/1.15.9" 
+	["go 1.16"]="/usr/local/Cellar/go/1.16/libexec" 
+	["go latest"]="/usr/local/Cellar/go/1.16/libexec" 
     )
     declare -A _tools=(
         ["go"]=_setGoVersion 
