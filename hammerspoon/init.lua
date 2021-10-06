@@ -33,3 +33,5 @@ Install:andUse("MouseCircle", {
 
 hs.loadSpoon("ShiftIt")
 spoon.ShiftIt:bindHotkeys({});
+
+require("bluetooth")
