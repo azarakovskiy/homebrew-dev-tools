@@ -6,7 +6,7 @@ bindkey "^[[1;9C" forward-word
 defaults write -g com.apple.mouse.scaling 9.0
 
 # Quick access aliases to .zshrc
-alias zxc='sublime ~/.zshrc'
+alias zxc='atom ~/.zshrc'
 alias zxcv='source ~/.zshrc'
 
 # If current folder has .zsh_config, load it
