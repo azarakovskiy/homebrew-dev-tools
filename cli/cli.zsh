@@ -71,14 +71,3 @@ func _setGoVersion() {
     ln -sf "$version/bin/gofmt" /usr/local/bin/gofmt
     export GOROOT=$goroot
 }
-
-# tha cmd to copy zipped THA to a specific folder
-function tha() {
-    readonly folder=${1:?"Folder name (e.g. alexey_zarakovskiy)"}
-    readonly zip=${2:?"Archive name (e.g. beat_tha.zip)"}
-    mkdir ~/Projects/Beat/Interviews/THA/$folder && \
-    mv ~/Downloads/$zip ~/Projects/Beat/Interviews/THA/$folder && \
-    unar -o ~/Projects/Beat/Interviews/THA/$folder  ~/Projects/Beat/Interviews/THA/$folder/$zip && \
-    touch  ~/Projects/Beat/Interviews/THA/$folder.tha
-    echo "Done. Here: ~/Projects/Beat/Interviews/THA/$folder"
-}
