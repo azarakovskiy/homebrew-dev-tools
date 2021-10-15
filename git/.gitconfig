@@ -2,18 +2,18 @@
 	name = ???
 	email = ???
 	; https://help.github.com/en/github/authenticating-to-github/generating-a-new-gpg-key
-	signingkey = ??? 
+	signingkey = ???
 [core]
 	excludesfile = ~/.gitignore
 	autocrlf = input
-	editor = sublime -w
+	editor = atom --wait
 [alias]
 	squash = !gsq
 	pr = !gpr
 	cleanup = !gclean
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
+	path =
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
