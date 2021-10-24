@@ -1,23 +1,2 @@
-What is the change? (try to keep <= 50 characters)
-
 # This line is 50 characters long, for reference!!
-
-################################
-# [Ticker Number] [Story Number]
-################################
-
-################################
-# Multi-line description of commit,
-# feel free to be detailed.
-# It might help someone in the future.
-################################
-
-# Please enter the commit message for your changes. Lines starting
-# with '#' will be ignored, and an empty message aborts the commit.
-# 
-# Keep your commit ATOMIC, 
-# repository in a WORKING state, 
-# commit message MEANINGFUL.
-#
-# Always remember about Git Best Practices https://github.com/trein/dev-best-practices/wiki/Git-Commit-Best-Practices
-#
+ d
