@@ -14,7 +14,7 @@ echo "Done"
 
 echo "Installing essential stuff with Homebrew..."
 brew install --cast iterm2 bitwarden
-brew install zsh wget git gpg atom
+brew install zsh wget git gpg atom hammerspoon
 echo "Done"
 
 echo "Installing Oh My ZSH..."
@@ -35,8 +35,10 @@ mkdir ~/Projects/azarakovskiy/homebrew-dev-tools
 
 cd /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools
 git remote add dev git@github.com:azarakovskiy/homebrew-dev-tools.git
-ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/ ~/Projects/azarakovskiy/homebrew-dev-tools
 cd ~
+
+ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/ ~/Projects/azarakovskiy/homebrew-dev-tools
+ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/hammerspoon ~/.hammerspoon
 echi "Done"
 
 echo "Add ssh config..."
