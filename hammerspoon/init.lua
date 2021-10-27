@@ -5,28 +5,19 @@ hs.loadSpoon("SpoonInstall", {
     use_syncinstall = true
 })
 
--- todo add multiple repos
-
--- spoon.SpoonInstall.repos.HammerspoonShiftit = {
---     url = "https://github.com/azarakovskiy/hammerspoon-shiftit",
---     desc = "HammerspoonShiftit spoon repository",
---     branch = "master",
--- }
--- spoon.SpoonInstall:updateRepo('HammerspoonShiftit')
 Install=spoon.SpoonInstall
 
-
 Install:andUse("Caffeine", {
-    start = true, hotkeys = { 
+    start = true, hotkeys = {
         toggle = { minorMash, "c" }
     }
 })
 
-Install:andUse("MouseCircle", {    
+Install:andUse("MouseCircle", {
     config = {
-        color = hs.drawing.color.x11.darkred        
+        color = hs.drawing.color.x11.darkred
     },
-    hotkeys = { 
+    hotkeys = {
         show = { minorMash, "m" }
     }
 })
