@@ -14,7 +14,7 @@ function genSublime {
     echo $CONFIG > "${FOLDERNAME}.sublime-project"
   fi
 
-  sub
+  subl
 }
 
-alias gen-sublime=genSublime
+alias sublify=genSublime
