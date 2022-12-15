@@ -16,6 +16,8 @@ You need to have Homebrew installed on your system.
 
 `source '/usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/all.zsh'` 
 
+Note: on M1 Mac brew installs everything to `/opt/homebrew/Library/Taps/azarakovskiy`
+
 If you only need a part of it, you can reference it using the relative paths from this repository. 
 E.g.: 
 
