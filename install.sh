@@ -63,4 +63,7 @@ read -s -k '?Press any key to continue.'
 echo "Please copy Git config..."
 read -s -k '?Press any key to continue.'
 
+echo "Say No to font smoothing"
+defaults -currentHost write -g AppleFontSmoothing -int 0
+
 source ~/.zshrc
