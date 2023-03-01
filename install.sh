@@ -31,15 +31,15 @@ echo "\n" >> ~/.zshrc
 echo "Done"
 
 echo "Create directories and links..."
-mkdir ~/Projects
-mkdir ~/Projects/azarakovskiy
-mkdir ~/Projects/azarakovskiy/homebrew-dev-tools
+mkdir ~/dev
+mkdir ~/dev/azarakovskiy
+mkdir ~/dev/azarakovskiy/homebrew-dev-tools
 
 cd /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools
 git remote add dev git@github.com:azarakovskiy/homebrew-dev-tools.git
 cd ~
 
-ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/ ~/Projects/azarakovskiy/homebrew-dev-tools
+ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/ ~/dev/azarakovskiy/homebrew-dev-tools
 ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/hammerspoon ~/.hammerspoon
 echi "Done"
 
