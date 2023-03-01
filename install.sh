@@ -35,12 +35,12 @@ mkdir ~/dev
 mkdir ~/dev/azarakovskiy
 mkdir ~/dev/azarakovskiy/homebrew-dev-tools
 
-cd /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools
+cd /opt/homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools
 git remote add dev git@github.com:azarakovskiy/homebrew-dev-tools.git
 cd ~
 
-ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/ ~/dev/azarakovskiy/homebrew-dev-tools
-ln -s /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/hammerspoon ~/.hammerspoon
+ln -s /opt/homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/ ~/dev/azarakovskiy/homebrew-dev-tools
+ln -s /opt/homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/hammerspoon ~/.hammerspoon
 echi "Done"
 
 echo "Add ssh config..."
