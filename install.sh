@@ -26,7 +26,7 @@ echo "Done"
 echo "Tapping dev-tools..."
 brew tap azarakovskiy/homebrew-dev-tools
 echo "\n" >> ~/.zshrc
-echo "source /usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/all.zsh" >> ~/.zshrc
+echo "source /opt/homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/all.zsh" >> ~/.zshrc
 echo "\n" >> ~/.zshrc
 echo "Done"
 
