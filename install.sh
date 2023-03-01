@@ -21,7 +21,7 @@ echo "Done"
 
 echo "Installing less essential stuff but referenced in scripts with Homebrew..."
 brew install --cask iterm2 bitwarden sublime-text
-brew install zsh wget git gpg hammerspoon
+brew install zsh wget git gpg hammerspoon blueutil
 echo "Done"
 
 echo "Installing Oh My ZSH..."
