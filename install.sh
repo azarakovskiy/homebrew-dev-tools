@@ -15,7 +15,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 echo "Done"
 
 echo "Installing essential stuff with Homebrew..."
-brew install --cast iterm2 bitwarden sublime-text
+brew install --cask iterm2 bitwarden sublime-text
 brew install zsh wget git gpg hammerspoon
 echo "Done"
 
