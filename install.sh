@@ -13,8 +13,8 @@ echo "Installing Homebrew..."
 echo "Done"
 
 echo "Installing essential stuff with Homebrew..."
-brew install --cast iterm2 bitwarden
-brew install zsh wget git gpg atom hammerspoon
+brew install --cast iterm2 bitwarden sublime-text
+brew install zsh wget git gpg hammerspoon
 echo "Done"
 
 echo "Installing Oh My ZSH..."
