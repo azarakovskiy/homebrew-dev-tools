@@ -19,6 +19,11 @@ brew install --cask iterm2 bitwarden sublime-text
 brew install zsh wget git gpg hammerspoon
 echo "Done"
 
+echo "Installing less essential stuff but referenced in scripts with Homebrew..."
+brew install --cask iterm2 bitwarden sublime-text
+brew install zsh wget git gpg hammerspoon
+echo "Done"
+
 echo "Installing Oh My ZSH..."
 sh -c "$(wget https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"
 echo "Done"
