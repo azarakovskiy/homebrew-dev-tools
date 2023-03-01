@@ -6,6 +6,7 @@ bindkey "^[[1;9C" forward-word
 defaults write -g com.apple.mouse.scaling 9.0
 
 # Quick access aliases to .zshrc
+alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
 alias zxc='subl ~/.zshrc'
 alias zxcv='source ~/.zshrc'
 
