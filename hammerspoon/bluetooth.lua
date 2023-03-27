@@ -7,7 +7,7 @@ function checkBluetoothResult(rc, stderr, stderr)
 end
 
 function bluetooth(power)
-    print("Setting bluetooth to " .. power)
+    print("Using `blueutil` to set bluetooth to " .. power)
     local t = hs.task.new("/opt/homebrew/bin/blueutil", checkBluetoothResult, {"--power", power})
     t:start()
 end
