@@ -9,7 +9,7 @@ defaults write -g com.apple.mouse.scaling 9.0
 alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
 alias zxc='subl ~/.zshrc'
 alias zxcv='source ~/.zshrc'
-aliad chrome_no_cors='open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'
+alias chrome_no_cors='open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'
 
 # If current folder has .zsh_config, load it
 function chpwd() {
