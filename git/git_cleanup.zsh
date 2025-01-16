@@ -1,48 +1,48 @@
-function git_remove_branch_and_remote() {
-	readonly branch=${1:?"You need to provide a branch name to remove together with a remote."}	
-	readonly current=$(git rev-parse --abbrev-ref HEAD)
-
-	if [[ "master" == $branch ]] || [[ "develop" == $branch ]]; then
-		echo "If you want to remove $branch, do it manually, ok?"
-	else
-		if [[ $current == $branch ]]; then
-			echo "You're on a branch you want to remove. Please checkout any different branch."
-		else
-			read "response?Remove $branch AND origin/$branch (if it exists)? [y/N] ?"
-			if [[ "$response" =~ ^[Yy]$ ]]; then
-				git branch -d $branch
-				branch_exists_remotely=$(git ls-remote --heads origin $branch)
-				if [[ $branch_exists_remotely != "" ]]; then				
-					git push --delete origin $branch
-				fi
-			else
-				echo "Ok, didn't do anything now."
-			fi
-		fi	
-	fi
-}
+#!/bin/zsh
 
 function git_cleanup() {
-	readonly main_branch=${1:?"You need to provide a branch name that's considered to be the main branch."}	
+  # Prompt for branch to compare against
+  read "base_branch?Enter the base branch to compare against (master/main): "
 
-	git checkout ${main_branch}
-	git fetch -p
+  # Validate base branch input
+  if [[ "$base_branch" != "master" && "$base_branch" != "main" ]]; then
+    echo "Invalid branch. Please enter 'master' or 'main'."
+    return 1
+  fi
 
-	for branch in `git branch --merged | egrep -v "(^\*|$main_branch)"`; do
-		git_remove_branch_and_remote $branch
-	done
+  # Prompt for text to search in branch names
+  read "search_text?Enter text to search for in branch names (leave empty for any): "
 
-	echo "\nThese branches are MERGED on remote. They don't exist locally. //start list"
-	for branch in `git branch -r --merged | egrep -v "(^\*|$main_branch|HEAD)"`; do 
-		echo -e `git show --format="%ci %cr %an" $branch | head -n 1` \\tgit push --delete $branch | sed 's/origin\//origin /'; 
-	done | sort -r
-	echo "//end list"
+  # Find branches that are merged into the specified base branch and match the search text
+  merged_branches=$(git branch --merged "$base_branch" | grep -v '^\*' | grep "$search_text")
 
-	echo "\nThese branches are NOT merged on remote. //start list"
-	for branch in `git branch -r --no-merged | egrep -v "(^\*|$main_branch|HEAD)"`; do 
-		echo -e `git show --format="%ci %cr %an" $branch | head -n 1` \\t$branch; 
-	done | sort -r
-	echo "//end list"
+  if [[ -z "$merged_branches" ]]; then
+    echo "No branches found that are merged into '$base_branch' and match '$search_text'."
+    return 0
+  fi
+
+  # Iterate through the branches and prompt for deletion
+  for branch in $merged_branches; do
+    read "delete_branch?Do you want to delete the branch '$branch'? (y/n): "
+    if [[ "$delete_branch" == "y" ]]; then
+      git branch -d "$branch" || echo "Failed to delete branch '$branch'."
+
+      # Prompt to remove the origin branch
+      read "delete_remote?Do you want to delete the remote branch 'origin/$branch'? (y/n): "
+      if [[ "$delete_remote" == "y" ]]; then
+        git push origin --delete "$branch" || echo "Failed to delete remote branch 'origin/$branch'."
+      fi
+    fi
+  done
+
+  # List all remaining branches
+  echo "Remaining branches:"
+  echo "Merged branches:"
+  git branch --merged "$base_branch" | grep -v '^\*'
+
+  echo "Not merged branches:"
+  git branch --no-merged "$base_branch" | grep -v '^\*'
 }
 
-alias gclean='git_cleanup'
+# Set up an alias
+alias git_cleanup="git_cleanup"
