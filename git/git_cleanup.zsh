@@ -1,8 +1,6 @@
 #!/bin/zsh
 
 function cleanup_my_branches() {
-    # Configuration
-    local SCRIPT_START_DATE="2024-01-01"  # Configurable start date
     local DEFAULT_BASE_BRANCH=""
     
     # Try to detect default branch
@@ -60,27 +58,21 @@ function cleanup_my_branches() {
         # Skip if branch is empty or protected
         [[ -z "$branch" || " ${protected_branches[@]} " =~ " ${branch} " ]] && continue
 
-        # Get branch creation date and last committer
-        local created_date=$(git log --format='%ai' --reverse "$branch" 2>/dev/null | head -1)
-        if [[ -z "$created_date" ]]; then
-            echo "Warning: Unable to get history for branch '$branch', skipping..."
-            continue
-        fi
-        
-        # Skip branches created before script start date
-        if [[ "$created_date" < "$SCRIPT_START_DATE" ]]; then
-            echo "Skipping old branch '$branch' (created before $SCRIPT_START_DATE)"
+        # Check branch ownership and merge status
+        if [[ -z "$(git rev-parse --verify "$branch" 2>/dev/null)" ]]; then
             continue
         fi
 
         local last_committer=$(git log -1 --format='%ae' "$branch" 2>/dev/null)
         
         # If this is your branch and matches story number if provided
-        if [[ "$last_committer" == "$user_email" && \
-              ( -z "$story_number" || "$branch" =~ "$story_number" ) ]]; then
+        if [[ "$last_committer" == "$user_email" || \
+              ( -z "$last_committer" && -n "$(git rev-parse --verify "$branch" 2>/dev/null)" ) ]] && \
+           [[ -z "$story_number" || "$branch" =~ "$story_number" ]]; then
             
-            # Check if branch is merged
-            if git branch --merged "$base_branch" | grep -q "^[* ]*${branch}$"; then
+            # Check if branch is merged or empty
+            if git branch --merged "$base_branch" | grep -q "^[* ]*${branch}$" || \
+               [[ -z "$(git rev-parse --verify "$branch^{commit}" 2>/dev/null)" ]]; then
                 my_branches+=("$branch")
             else
                 # Check if branch has any unique commits
@@ -95,7 +87,10 @@ function cleanup_my_branches() {
     done < <(git branch)
 
     if (( ${#my_branches[@]} == 0 )); then
-        echo "\nNo eligible branches found for cleanup."
+        echo "\nNo branches found that match your criteria."
+        if [[ -n "$story_number" ]]; then
+            echo "No branches found matching story number: $story_number"
+        fi
         
         if (( ${#skipped_branches[@]} > 0 )); then
             echo "\nUnmerged branches that were skipped:"
@@ -159,16 +154,20 @@ function cleanup_my_branches() {
         done
         
         echo "\nCleanup Summary:"
-        echo "- Successfully deleted $deleted_count local branches"
-        echo "- Successfully deleted $remote_deleted_count remote branches"
+        if (( deleted_count > 0 )); then
+            echo "✓ Successfully deleted $deleted_count local branches"
+            echo "✓ Successfully deleted $remote_deleted_count remote branches"
+        else
+            echo "No branches were deleted"
+        fi
         
         if (( ${#failed_deletions[@]} > 0 )); then
-            echo "\nFailed to delete these local branches:"
+            echo "\n❌ Failed to delete these local branches:"
             printf '%s\n' "${failed_deletions[@]}"
         fi
         
         if (( ${#failed_remote_deletions[@]} > 0 )); then
-            echo "\nFailed to delete these remote branches:"
+            echo "\n❌ Failed to delete these remote branches:"
             printf '%s\n' "${failed_remote_deletions[@]}"
         fi
     else
@@ -220,4 +219,4 @@ function cleanup_my_branches() {
 }
 
 # Set up an alias
-alias git_cleanup="cleanup_my_branches"
+alias cleanup="cleanup_my_branches"
