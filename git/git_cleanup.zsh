@@ -29,8 +29,12 @@ function cleanup_my_branches() {
 
     # Fetch latest changes
     echo "Fetching latest changes from remote..."
-    if ! git fetch origin "$base_branch:$base_branch" 2>/dev/null; then
-        echo "Warning: Unable to fetch latest changes. Continuing with local state..."
+    if ! git ls-remote --quiet origin >/dev/null 2>&1; then
+        echo "Warning: Cannot connect to remote repository"
+    elif ! git fetch origin --quiet; then
+        echo "Warning: Unable to fetch changes"
+    else
+        echo "✓ Remote changes fetched successfully"
     fi
 
     # Get user email for branch ownership check
