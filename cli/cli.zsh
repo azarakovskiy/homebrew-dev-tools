@@ -1,22 +1,43 @@
-# Bind for a console word-by-word navigation
-bindkey "^[[1;9D" backward-word
-bindkey "^[[1;9C" forward-word
+# shellcheck shell=zsh
 
-# Mouse speed
-defaults write -g com.apple.mouse.scaling 9.0
+if [[ -o interactive ]]; then
+  bindkey "^[[1;9D" backward-word
+  bindkey "^[[1;9C" forward-word
+fi
 
-# Quick access aliases to .zshrc
-alias subl="'/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl'"
+if [[ -x "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ]]; then
+  alias subl="/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"
+fi
+
 alias zxc='subl ~/.zshrc'
 alias zxcv='source ~/.zshrc'
-alias chrome_no_cors='open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'
+alias chrome_no_cors='open -na "Google Chrome" --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'
 
-# If current folder has .zsh_config, load it
-function chpwd() {
-  if [ -r $PWD/.zsh_config ]; then
-  	echo "Loaded .zsh_config from $PWD"
-    source $PWD/.zsh_config
-  else
-    source $HOME/.zshrc
-  fi
-}
+# Load a project-local .zsh_config on directory change, once per directory.
+if ! typeset -f devtools_load_local_zsh_config >/dev/null 2>&1; then
+  typeset -g DEVTOOLS_LAST_LOCAL_ZSH_CONFIG=""
+
+  function devtools_load_local_zsh_config() {
+    emulate -L zsh
+
+    local config_file="$PWD/.zsh_config"
+
+    if [[ -r "$config_file" ]]; then
+      if [[ "$DEVTOOLS_LAST_LOCAL_ZSH_CONFIG" != "$config_file" ]]; then
+        DEVTOOLS_LAST_LOCAL_ZSH_CONFIG="$config_file"
+        echo "Loaded .zsh_config from $PWD"
+        source "$config_file"
+      fi
+    else
+      DEVTOOLS_LAST_LOCAL_ZSH_CONFIG=""
+    fi
+  }
+fi
+
+autoload -Uz add-zsh-hook
+if [[ "${DEVTOOLS_CHPWD_HOOK_INSTALLED:-0}" -eq 0 ]]; then
+  add-zsh-hook chpwd devtools_load_local_zsh_config
+  typeset -g DEVTOOLS_CHPWD_HOOK_INSTALLED=1
+fi
+
+devtools_load_local_zsh_config

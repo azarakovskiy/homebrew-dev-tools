@@ -1,55 +1,81 @@
-# k8s tricks
-source <(kubectl completion zsh)
+# shellcheck shell=zsh
+
+if command -v kubectl >/dev/null 2>&1; then
+  if whence compdef >/dev/null 2>&1; then
+    source <(kubectl completion zsh)
+  fi
+else
+  echo "[devtools][warn] kubectl not found. kube aliases are limited." >&2
+fi
+
 alias k='kubectl'
 
 function kube_context() {
-	readonly action=$1
-	if [[ $action == "" ]]; then
-		k config get-contexts | grepl "\*"
-		echo "You wanted to list contexts. Here you are."
-	elif [[ $action == "use" ]]; then
-		readonly context=${2:?"The kube context must be specified as a 2nd param"}
-		k config use-context "$context"
-		echo "You wanted to switch a context. Did my best."
-	elif [[ $action == "set" ]]; then
-		echo "Nothing happened (not implemented yet)..."
-		echo "Here is you command template though:\n\n"
-		echo "\tk config set-context CONTEXT --cluster=CLUSTER --user=USER"
-	else 
-		echo "It is not clear what you want. Use \`kctx [VERB CONTEXT]\`"
-	fi
+  emulate -L zsh
+
+  local action="${1:-list}"
+  local context_name
+
+  case "$action" in
+    list)
+      k config get-contexts
+      ;;
+    use)
+      context_name="${2:?Context name is required: kctx use <context>}"
+      k config use-context "$context_name"
+      ;;
+    set-template)
+      echo 'Template: kubectl config set-context CONTEXT --cluster=CLUSTER --user=USER'
+      ;;
+    *)
+      echo "Usage: kctx [list|use <context>|set-template]"
+      return 1
+      ;;
+  esac
 }
 
 function kube_pods() {
-	readonly action=$1
-	if [[ $action == "" ]]; then
-		k get pods
-		echo "You wanted to list pods. Here you are."
-	else 
-		readonly podname=${2:?"The kube pod name must be specified as a 2nd param"}
-		if [[ $action == "exec" ]]; then
-			readonly execCmd=${3:?"The command to execute must be specified as a 3rd param"}
-			k exec -it $podname $execCmd
-			echo "You wanted to execute a command. Done."
-		elif [[ $action == "del" ]]; then
-			k delete pods $podname
-			echo "You wanted to delete a pod. Bye-bye pod!"
-		elif [[ $action == "logs" ]]; then
-			k logs -f $podname
-			echo "You wanted to check logs of a pod. Happy now?"
-		elif [[ $action == "desc" ]]; then
-			k describe pods $podname
-			echo "You wanted to learn a pod. Is it clear now?"
-		else 
-			echo "It is not clear what you want. Use \`kpods [VERB PODNAME [EXEC_CMD]]\`"
-		fi
-	fi
-	
+  emulate -L zsh
+
+  local action="${1:-list}"
+  local pod_name
+
+  case "$action" in
+    list)
+      k get pods
+      ;;
+    exec)
+      pod_name="${2:?Pod name is required: kpods exec <pod> <command...>}"
+      shift 2
+      if (( $# == 0 )); then
+        echo "Command is required: kpods exec <pod> <command...>"
+        return 1
+      fi
+      k exec -it "$pod_name" -- "$@"
+      ;;
+    del)
+      pod_name="${2:?Pod name is required: kpods del <pod>}"
+      k delete pod "$pod_name"
+      ;;
+    logs)
+      pod_name="${2:?Pod name is required: kpods logs <pod>}"
+      k logs -f "$pod_name"
+      ;;
+    desc)
+      pod_name="${2:?Pod name is required: kpods desc <pod>}"
+      k describe pod "$pod_name"
+      ;;
+    *)
+      echo "Usage: kpods [list|exec <pod> <command...>|del <pod>|logs <pod>|desc <pod>]"
+      return 1
+      ;;
+  esac
 }
 
 function kube_namespaces() {
-	k get namespaces
+  k get namespaces
 }
 
-alias kctx=kube_context
-alias kpods=kube_pods
+alias kctx='kube_context'
+alias kpods='kube_pods'
+alias kns='kube_namespaces'

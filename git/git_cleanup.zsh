@@ -1,226 +1,108 @@
-#!/bin/zsh
+# shellcheck shell=zsh
 
-function cleanup_my_branches() {
-    local DEFAULT_BASE_BRANCH=""
-    
-    # Try to detect default branch
-    if git rev-parse --verify "main" >/dev/null 2>&1; then
-        DEFAULT_BASE_BRANCH="main"
-    elif git rev-parse --verify "master" >/dev/null 2>&1; then
-        DEFAULT_BASE_BRANCH="master"
-    fi
-    
-    # Prompt for base branch with default suggestion
-    read "base_branch?Enter the base branch to compare against [${DEFAULT_BASE_BRANCH}]: "
-    base_branch=${base_branch:-$DEFAULT_BASE_BRANCH}
-
-    # Validate base branch input
-    if [[ "$base_branch" != "master" && "$base_branch" != "main" ]]; then
-        echo "Invalid branch. Please enter 'master' or 'main'."
-        return 1
-    fi
-
-    # Ensure we're on an actual branch
-    local current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
-    if [[ $? -ne 0 ]]; then
-        echo "Not on any branch. Please checkout a branch first."
-        return 1
-    fi
-
-    # Fetch latest changes
-    echo "Fetching latest changes from remote..."
-    if ! git ls-remote --quiet origin >/dev/null 2>&1; then
-        echo "Warning: Cannot connect to remote repository"
-    elif ! git fetch origin --quiet; then
-        echo "Warning: Unable to fetch changes"
-    else
-        echo "✓ Remote changes fetched successfully"
-    fi
-
-    # Get user email for branch ownership check
-    local user_email=$(git config user.email)
-    if [[ -z "$user_email" ]]; then
-        echo "Unable to determine your git email. Please configure git user.email"
-        return 1
-    fi
-
-    # Optional: Prompt for story/ticket number
-    read "story_number?Enter story/ticket number (leave empty for all your branches): "
-
-    # Find branches that you created/last committed to
-    local my_branches=()
-    local skipped_branches=()
-    local protected_branches=($base_branch $current_branch)
-    
-    echo "\nAnalyzing branches..."
-    
-    while IFS= read -r branch; do
-        branch="${branch#"${branch%%[! ]*}"}" # trim leading whitespace
-        branch="${branch# }" # Remove potential leading space
-        branch="${branch#\* }" # Remove potential asterisk from current branch
-        
-        # Skip if branch is empty or protected
-        [[ -z "$branch" || " ${protected_branches[@]} " =~ " ${branch} " ]] && continue
-
-        # Check branch ownership and merge status
-        if [[ -z "$(git rev-parse --verify "$branch" 2>/dev/null)" ]]; then
-            continue
-        fi
-
-        local last_committer=$(git log -1 --format='%ae' "$branch" 2>/dev/null)
-        
-        # If this is your branch and matches story number if provided
-        if [[ "$last_committer" == "$user_email" || \
-              ( -z "$last_committer" && -n "$(git rev-parse --verify "$branch" 2>/dev/null)" ) ]] && \
-           [[ -z "$story_number" || "$branch" =~ "$story_number" ]]; then
-            
-            # Check if branch is merged or empty
-            if git branch --merged "$base_branch" | grep -q "^[* ]*${branch}$" || \
-               [[ -z "$(git rev-parse --verify "$branch^{commit}" 2>/dev/null)" ]]; then
-                my_branches+=("$branch")
-            else
-                # Check if branch has any unique commits
-                local unique_commits=$(git log "$base_branch..$branch" --oneline 2>/dev/null | wc -l)
-                if (( unique_commits == 0 )); then
-                    my_branches+=("$branch")  # Branch is effectively merged
-                else
-                    skipped_branches+=("$branch")
-                fi
-            fi
-        fi
-    done < <(git branch)
-
-    if (( ${#my_branches[@]} == 0 )); then
-        echo "\nNo branches found that match your criteria."
-        if [[ -n "$story_number" ]]; then
-            echo "No branches found matching story number: $story_number"
-        fi
-        
-        if (( ${#skipped_branches[@]} > 0 )); then
-            echo "\nUnmerged branches that were skipped:"
-            printf '%s\n' "${skipped_branches[@]}"
-        fi
-        return 0
-    fi
-
-    echo "\nFound ${#my_branches[@]} eligible branches for cleanup:"
-    printf '%s\n' "${my_branches[@]}"
-    
-    if (( ${#skipped_branches[@]} > 0 )); then
-        echo "\nSkipping ${#skipped_branches[@]} unmerged branches:"
-        printf '%s\n' "${skipped_branches[@]}"
-    fi
-
-    # Batch deletion option
-    read "batch_delete?Do you want to delete all eligible branches at once? (y/n): "
-    if [[ "$batch_delete" =~ ^[Yy]$ ]]; then
-        echo "\nProcessing batch deletion..."
-        local deleted_count=0
-        local remote_deleted_count=0
-        local failed_deletions=()
-        local failed_remote_deletions=()
-        
-        for branch in "${my_branches[@]}"; do
-            echo "\nProcessing '$branch'..."
-            
-            # Verify branch still exists and is still merged
-            if ! git rev-parse --verify "$branch" >/dev/null 2>&1; then
-                echo "Branch no longer exists, skipping..."
-                continue
-            fi
-            
-            if ! git branch --merged "$base_branch" | grep -q "^[* ]*${branch}$"; then
-                local unique_commits=$(git log "$base_branch..$branch" --oneline 2>/dev/null | wc -l)
-                if (( unique_commits > 0 )); then
-                    echo "Branch is no longer merged, skipping..."
-                    continue
-                fi
-            fi
-            
-            if git branch -d "$branch" 2>/dev/null; then
-                ((deleted_count++))
-                echo "Deleted local branch"
-                
-                # Check if branch exists on remote
-                if git ls-remote --heads origin "$branch" &>/dev/null; then
-                    if git push origin --delete "$branch" 2>/dev/null; then
-                        ((remote_deleted_count++))
-                        echo "Deleted remote branch"
-                    else
-                        failed_remote_deletions+=("$branch")
-                        echo "Failed to delete remote branch"
-                    fi
-                fi
-            else
-                failed_deletions+=("$branch")
-                echo "Failed to delete local branch"
-            fi
-        done
-        
-        echo "\nCleanup Summary:"
-        if (( deleted_count > 0 )); then
-            echo "✓ Successfully deleted $deleted_count local branches"
-            echo "✓ Successfully deleted $remote_deleted_count remote branches"
-        else
-            echo "No branches were deleted"
-        fi
-        
-        if (( ${#failed_deletions[@]} > 0 )); then
-            echo "\n❌ Failed to delete these local branches:"
-            printf '%s\n' "${failed_deletions[@]}"
-        fi
-        
-        if (( ${#failed_remote_deletions[@]} > 0 )); then
-            echo "\n❌ Failed to delete these remote branches:"
-            printf '%s\n' "${failed_remote_deletions[@]}"
-        fi
-    else
-        # Individual deletion mode
-        echo "\nProcessing branches individually..."
-        for branch in "${my_branches[@]}"; do
-            read "delete_branch?Delete branch '$branch'? (y/n): "
-            if [[ "$delete_branch" =~ ^[Yy]$ ]]; then
-                if git branch -d "$branch" 2>/dev/null; then
-                    echo "Deleted local branch '$branch'"
-                    
-                    if git ls-remote --heads origin "$branch" &>/dev/null; then
-                        read "delete_remote?Delete remote branch 'origin/$branch'? (y/n): "
-                        if [[ "$delete_remote" =~ ^[Yy]$ ]]; then
-                            if git push origin --delete "$branch" 2>/dev/null; then
-                                echo "Deleted remote branch 'origin/$branch'"
-                            else
-                                echo "Failed to delete remote branch 'origin/$branch'"
-                            fi
-                        fi
-                    fi
-                else
-                    echo "Failed to delete local branch '$branch'"
-                fi
-            fi
-        done
-    fi
-
-    # Show remaining branches status
-    echo "\nYour remaining branches:"
-    while IFS= read -r branch; do
-        branch="${branch#"${branch%%[! ]*}"}" # trim leading whitespace
-        branch="${branch# }" # Remove potential leading space
-        branch="${branch#\* }" # Remove potential asterisk from current branch
-        
-        [[ -z "$branch" ]] && continue
-        
-        local last_committer=$(git log -1 --format='%ae' "$branch" 2>/dev/null)
-        if [[ "$last_committer" == "$user_email" ]]; then
-            local is_merged=""
-            if git branch --merged "$base_branch" | grep -q "^[* ]*${branch}$"; then
-                is_merged="(merged)"
-            else
-                is_merged="(not merged)"
-            fi
-            echo "- $branch $is_merged"
-        fi
-    done < <(git branch)
+function _cleanup_default_base_branch() {
+  if git show-ref --verify --quiet refs/heads/main; then
+    echo "main"
+  elif git show-ref --verify --quiet refs/heads/master; then
+    echo "master"
+  else
+    echo ""
+  fi
 }
 
-# Set up an alias
-alias cleanup="cleanup_my_branches"
+function _cleanup_branch_is_merged() {
+  local branch_name="${1:?Branch name is required.}"
+  local base_branch="${2:?Base branch is required.}"
+
+  git merge-base --is-ancestor "$branch_name" "$base_branch" >/dev/null 2>&1
+}
+
+function cleanup_my_branches() {
+  emulate -L zsh
+
+  if ! git rev-parse --git-dir >/dev/null 2>&1; then
+    echo "Not inside a git repository."
+    return 1
+  fi
+
+  local default_base base_branch ticket_filter current_branch
+  local delete_all delete_remote
+  local -a all_branches candidate_branches failed_branches
+
+  default_base="$(_cleanup_default_base_branch)"
+  if [[ -n "${1:-}" ]]; then
+    base_branch="$1"
+  else
+    read "base_branch?Enter base branch [${default_base}]: "
+    base_branch="${base_branch:-$default_base}"
+  fi
+
+  if [[ -z "$base_branch" ]] || ! git show-ref --verify --quiet "refs/heads/$base_branch"; then
+    echo "Base branch '$base_branch' does not exist locally."
+    return 1
+  fi
+
+  ticket_filter="${2:-}"
+  if [[ -z "$ticket_filter" ]]; then
+    read "ticket_filter?Optional ticket filter (leave empty for all): "
+  fi
+
+  current_branch="$(git branch --show-current 2>/dev/null || true)"
+
+  echo "Fetching latest changes from origin..."
+  git fetch origin --quiet >/dev/null 2>&1 || echo "Warning: could not fetch origin"
+
+  all_branches=("${(@f)$(git for-each-ref --format='%(refname:short)' refs/heads)}")
+  candidate_branches=()
+
+  local branch
+  for branch in "${all_branches[@]}"; do
+    [[ -z "$branch" ]] && continue
+    [[ "$branch" == "$base_branch" ]] && continue
+    [[ "$branch" == "$current_branch" ]] && continue
+    [[ "$branch" == "main" || "$branch" == "master" ]] && continue
+    [[ -n "$ticket_filter" && "$branch" != *"$ticket_filter"* ]] && continue
+
+    if _cleanup_branch_is_merged "$branch" "$base_branch"; then
+      candidate_branches+=("$branch")
+    fi
+  done
+
+  if (( ${#candidate_branches[@]} == 0 )); then
+    echo "No merged local branches eligible for cleanup."
+    return 0
+  fi
+
+  echo "Eligible branches (${#candidate_branches[@]}):"
+  printf '  - %s\n' "${candidate_branches[@]}"
+
+  read "delete_all?Delete all these local branches? (y/n): "
+  if [[ ! "$delete_all" =~ '^[Yy]$' ]]; then
+    echo "Cancelled."
+    return 0
+  fi
+
+  read "delete_remote?Also delete matching remote branches from origin? (y/n): "
+
+  failed_branches=()
+  for branch in "${candidate_branches[@]}"; do
+    if git branch -d "$branch"; then
+      if [[ "$delete_remote" =~ '^[Yy]$' ]] && git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+        git push origin --delete "$branch" >/dev/null 2>&1 || echo "Warning: failed to delete remote branch origin/$branch"
+      fi
+    else
+      failed_branches+=("$branch")
+    fi
+  done
+
+  if (( ${#failed_branches[@]} > 0 )); then
+    echo "Failed to delete:"
+    printf '  - %s\n' "${failed_branches[@]}"
+    return 1
+  fi
+
+  echo "Cleanup finished successfully."
+}
+
+alias cleanup='cleanup_my_branches'
+alias gclean='cleanup_my_branches'

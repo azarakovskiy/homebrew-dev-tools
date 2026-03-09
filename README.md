@@ -1,53 +1,96 @@
-# Development tools
+# Development Tools
 
-Used for ZSH on MacOS.
+Personal macOS bootstrap + Zsh toolset for quickly setting up a new development machine.
 
-## Installation
+## Goals
+- Set up a new laptop fast.
+- Automate most setup steps.
+- Keep non-sensitive configs and misc transferable files in one place.
 
-- Pre-requisites
+## Quick Start
+1. Clone this repo to a stable path (example: `~/.dotfiles`).
+2. Run a dry run first:
 
-You need to have Homebrew installed on your system.
+```sh
+cd ~/.dotfiles
+./bootstrap.sh --dry-run
+```
 
-- Install a tap
+3. Run setup + verification:
 
-`brew tap azarakovskiy/homebrew-dev-tools`
+```sh
+./bootstrap.sh --apply --verify
+```
 
-- Source it from main `.zshrc`
+4. Open a new shell, or run:
 
-`source '/usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/all.zsh'` 
+```sh
+source ~/.zshrc
+```
 
-Note: on M1 Mac brew installs everything to `/opt/homebrew/Library/Taps/azarakovskiy`
+## Bootstrap Commands
+- `./bootstrap.sh --apply --verify`  
+  Install/configure and verify.
+- `./bootstrap.sh --verify-only`  
+  Verification only.
+- `./bootstrap.sh --precheck-only`  
+  Environment checks only.
+- `./bootstrap.sh --dry-run`  
+  Show planned changes without mutating files.
 
-If you only need a part of it, you can reference it using the relative paths from this repository. 
-E.g.: 
+## What Gets Automated
+- Homebrew install (if missing).
+- Package install from `Brewfile` via `brew bundle`.
+- `brew shellenv` line in `~/.zprofile` (idempotent).
+- `source "<repo>/all.zsh"` line in `~/.zshrc` (idempotent).
+- `~/.hammerspoon` symlink to repo `hammerspoon/` (safe, no overwrite of existing non-symlink directory).
+- One-time macOS defaults:
+  - mouse scaling (`com.apple.mouse.scaling = 9.0`)
+  - font smoothing (`AppleFontSmoothing = 0`)
 
-`source '/usr/local/Homebrew/Library/Taps/azarakovskiy/homebrew-dev-tools/git/all.zsh`
+## Manual Steps (Intentional)
+- Add/import SSH keys.
+- Import GPG keys.
+- Review and apply templates:
+  - `git/.gitconfig`
+  - `git/.gitignore`
+  - `git/.gitmessage`
 
-## Structure
+## Zsh Modules and Commands
+Load all modules:
 
-Each folder represents part of tools for a specific thing. (e.g. `/git/` is obviously for Git stuff.)
+```sh
+source "<repo-path>/all.zsh"
+```
 
-Each folder has a `all.zsh` file to import everything from it, an each command might be imported individually too.
+Main command groups:
+- Git: `gbranch`, `gpr`, `gstash`, `grebase`, `gsquash`, `gcommit`, `gloggy`, `gclean`, `cleanup`
+- CLI/Docker: `dockstop`, `dockrmvol`, `grepl`, `sublify`, `genSublime`, `use`, `zxc`, `zxcv`
+- Kubernetes: `k`, `kctx`, `kpods`, `kns`
 
-## Contains
+## Repository Layout
+- `all.zsh` - top-level loader
+- `git/` - git helpers and templates
+- `cli/` - shell utility commands
+- `kube/` - kubectl helpers
+- `hammerspoon/` - Hammerspoon config
+- `etc/` - non-sensitive misc files
+- `scripts/bootstrap/lib/` - modular bootstrap internals (`common`, `precheck`, `apply`, `macos`, `verify`)
 
-+ Git `/git/`
-  + `.gitignore` - Default Git ignore file that you put under your `~` folder to apply to the whole system.
-  + `.gitconfig` - Default Git config file that you put under your `~` folder. Review it before using and edit the placeholders.
-  + `.gitmessage` - Default Git commit message template file that you put under your `~` folder. Now when you use `git commit` command without `-m` this template will be opened for editing.
+## Runtime Side Effects Policy
+Sourcing Zsh files should only define commands/aliases/hooks.  
+One-time machine settings are handled by bootstrap, not by shell startup.
 
-  + `gpr X` - Creates a local branch `PR-X` where `X` is a PR number on GitHub (`https://github.com/azarakovskiy/fake-repo/pull/X`)
-  + `gstash pop|push [X]` - (un)Stashes local changes with a given optional name `X`.
-  + `grebase X` - Rebases current branch onto latest `origin/X`. An `X` must have an upstream branch.
-  + `gsquash` - Squashes last two commits of a current branch
-  + `gloggy release` - Generates release message from `git log`. Assumes all the features are merged on GitHub with `#num` hashtag.
-  + `gbranch X` - Creates a new branch or check out the existing with a name `X`
-  + `gclean X` - [this one might be **ruthless**] Cleans up current Git repository by removing all the local branches that are merged and their remotes, and reporting on remote branches that don't have a local reference or are not merged. `X` is a branch that you consider to be a base branch (develop or master). Basically, it removes branched that are merged into your specified base branch. Never removes `develop` or `master`.
+## Legacy Tap-Based Usage
+Using Homebrew tap paths directly is still possible, but considered legacy and less portable than cloning to a stable path (for example `~/.dotfiles`).
 
-+ Docker tools  
-  + `dockstop` - Stops all running docker containers
-  
-+ Cli `/cli/`
-  + Key-bindings that enable word-by-word navigation in ZSH
-  + Quick aliases `zxc` and `zxcv` to open and reload respectively `.zshrc` file
-  + Auto-detection that a folder has `.zsh_config` in it, and thus auto-loading of it
+## Future Plans
+- Improve bootstrap verification with explicit PASS/FAIL summary and exit codes.
+- Add optional profile flags (`--minimal`, `--full`) to control install footprint.
+- Add optional secret bootstrap integration (for example 1Password/Bitwarden CLI), without storing secrets in repo.
+- Add automated smoke tests for critical aliases/functions.
+- Replace brittle legacy helpers with smaller tested scripts where shell complexity is high.
+- Add CI checks for shell syntax + README/bootstrap contract drift.
+
+## Contributor Note
+This repo uses `AGENTS.md` as the local working agreement for change safety and consistency.

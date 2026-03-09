@@ -1,35 +1,55 @@
+# shellcheck shell=zsh
+
 function docker_stop_all_containers() {
-  docker ps -q | xargs docker stop
+  emulate -L zsh
+
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "docker is not installed." >&2
+    return 1
+  fi
+
+  local -a container_ids
+  container_ids=("${(@f)$(docker ps -q)}")
+
+  if (( ${#container_ids[@]} == 0 )); then
+    echo "No running containers."
+    return 0
+  fi
+
+  docker stop "${container_ids[@]}"
 }
 
 function docker_prune_volumes() {
-    local container_id="$1"
+  emulate -L zsh
 
-    # Check if container ID is provided
-    if [ -z "$container_id" ]; then
-        echo "Container ID is missing."
-        return 1
-    fi
+  local container_id="${1:?Container ID is required.}"
+  local volume_output
+  local -a volumes
 
-    # Check if container exists
-    if ! docker inspect "$container_id" >/dev/null 2>&1; then
-        echo "Container $container_id does not exist."
-        return 1
-    fi
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "docker is not installed." >&2
+    return 1
+  fi
 
-    # List associated volumes
-    volumes=$(docker inspect --format '{{ range .Mounts }}{{ if .Name }}{{ .Name }} {{ end }}{{ end }}' "$container_id")
+  if ! docker inspect "$container_id" >/dev/null 2>&1; then
+    echo "Container '$container_id' does not exist."
+    return 1
+  fi
 
-    docker stop "$container_id"
-    docker rm "$container_id"
-    echo "Container $container_id has been removed."
+  volume_output="$(docker inspect --format '{{ range .Mounts }}{{ if .Name }}{{ .Name }} {{ end }}{{ end }}' "$container_id")"
+  volumes=("${(@s: :)volume_output}")
+  typeset -U volumes
 
-    # Remove associated volumes
-    for volume in $volumes; do
-        docker volume rm "$volume"
-    done
+  docker stop "$container_id" >/dev/null 2>&1 || true
+  docker rm "$container_id"
+  echo "Container '$container_id' has been removed."
 
-    echo "Volumes associated with container $container_id have been removed."
+  if (( ${#volumes[@]} > 0 )); then
+    docker volume rm "${volumes[@]}"
+    echo "Removed associated named volumes."
+  else
+    echo "No associated named volumes to remove."
+  fi
 }
 
 alias dockstop=docker_stop_all_containers

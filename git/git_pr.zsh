@@ -1,14 +1,21 @@
+# shellcheck shell=zsh
+
 function git_pr() {
-    export PREFIX="""PR-"""
-    export PR_NUMBER=$1
-    export BRANCH_NAME="""${PREFIX}${PR_NUMBER}"""
-    git rev-parse --verify ${BRANCH_NAME}
-    if [[ $? == 0 ]]; then
-        git branch -D ${BRANCH_NAME}
-    fi
-    git fetch origin pull/${PR_NUMBER}/head:${BRANCH_NAME}
-    git checkout ${BRANCH_NAME}
+  local pr_number="${1:?PR number is required.}"
+
+  if [[ ! "$pr_number" =~ ^[0-9]+$ ]]; then
+    echo "PR number must be numeric."
+    return 1
+  fi
+
+  local branch_name="PR-$pr_number"
+
+  if ! git fetch origin "pull/${pr_number}/head"; then
+    echo "Failed to fetch PR #$pr_number from origin."
+    return 1
+  fi
+
+  git checkout -B "$branch_name" FETCH_HEAD
 }
 
-# Checkout PR as a branch or update existing
 alias gpr=git_pr

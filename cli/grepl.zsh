@@ -1,7 +1,6 @@
-# grep without truncating
-function grepl_impl() {
-    readonly what=${1:?"Specify what to grep please"}
-    readonly regexp=".*$what.*|\$"
-    grep -E $regexp
+# shellcheck shell=zsh
+
+function grepl() {
+  local pattern="${1:?Specify what to grep.}"
+  grep --color=always -E -- "$pattern"
 }
-alias grepl=grepl_impl

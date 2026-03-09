@@ -1,30 +1,27 @@
-function git_branch_verify_and_checkout() {
-    BRANCH_NAME=$1
-    git rev-parse --verify ${BRANCH_NAME} &> /dev/null
+# shellcheck shell=zsh
 
-    if [[ $? == 0 ]]; then
-        git checkout ${BRANCH_NAME}
-        if [[ $? == 0 ]]; then
-            echo "Checked out existing branch"
-        fi
-    else 
-        git checkout -b ${BRANCH_NAME}
-        if [[ $? == 0 ]]; then
-            echo "Created and checked out a new branch"
-        fi
-    fi
+function git_branch_verify_and_checkout() {
+  local branch_name="${1:?Branch name is required.}"
+
+  if git show-ref --verify --quiet "refs/heads/$branch_name"; then
+    git switch "$branch_name" 2>/dev/null || git checkout "$branch_name"
+    echo "Checked out existing branch '$branch_name'."
+  else
+    git switch -c "$branch_name" 2>/dev/null || git checkout -b "$branch_name"
+    echo "Created and checked out branch '$branch_name'."
+  fi
 }
 
 function git_branch_checkout() {
-    BRANCH_NAME=$1
+  local branch_name="${1:-}"
 
-    if [[ $BRANCH_NAME == "" ]] || [[ $BRANCH_NAME == "-" ]]; then
-        git checkout -
-        echo "Checked out previous branch (git checkout -)"
-    else        
-        git_branch_verify_and_checkout $BRANCH_NAME
-    fi    
+  if [[ -z "$branch_name" || "$branch_name" == "-" ]]; then
+    git switch - 2>/dev/null || git checkout -
+    echo "Checked out previous branch."
+    return
+  fi
+
+  git_branch_verify_and_checkout "$branch_name"
 }
 
-# Checkout a branch or create a new one
 alias gbranch=git_branch_checkout
