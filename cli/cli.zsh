@@ -6,7 +6,9 @@ if [[ -o interactive ]]; then
 fi
 
 if [[ -x "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" ]]; then
-  alias subl="/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"
+  function subl() {
+    "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" "$@"
+  }
 fi
 
 alias zxc='subl ~/.zshrc'
