@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Final review gate before ship or merge. Thorough engineering review for spec compliance, correctness, and risk. Call once at the end, not during work.
-model: claude-opus-4-6
+model: sonnet
 tools: Read, Glob, Grep, WebFetch, WebSearch
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Refines a spec before implementation. Use when requirements are incomplete, ambiguous, inconsistent, or weakly testable.
-model: claude-sonnet-4-6
+model: sonnet
 tools: Read, Glob, Grep, WebFetch, WebSearch
 ---
 
