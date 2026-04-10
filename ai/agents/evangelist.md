@@ -1,7 +1,7 @@
 ---
 name: evangelist
 description: Lightweight quality pass on any output. Call after each agent step to catch obvious violations early, before they compound.
-model: claude-opus-4-6
+model: claude-sonnet-4-6
 tools: Read, Glob, Grep, WebFetch, WebSearch
 ---
 
